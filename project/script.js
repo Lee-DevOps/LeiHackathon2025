@@ -1,37 +1,31 @@
-function normalizeText(text) {
-    // Remove multiple spaces and normalize spacing
-    return text.replace(/\s+/g, ' ').trim();
-}
-
-// Enhanced name anonymization function with context awareness
+// Enhanced name anonymization function for resume
 function anonymizeText(text) {
     // Normalize text before anonymizing
-    text = normalizeText(text);
 
     // Regular expression for name anonymization (handle first and last name)
     const namePattern = /\b(?:Mr\.|Mrs\.|Ms\.|Dr\.|Prof\.)?\s*([A-Z][a-z]+)\s+([A-Z][a-z]+)(?:\s+(?:Jr\.|Sr\.|II|III))?\b/g;
 
-    // Replace names with initials if found in a professional context
+    let firstNameAnonymized = false;  // Track if the first full name has been anonymized
+
+    // Regular expression for email anonymization
+    const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
+
+    // First, anonymize emails
+    text = text.replace(emailPattern, '[email protected]');  // Replace email with placeholder
+
+    // Remove pronouns completely from the text
+    text = text.replace(/\b(?:he|him|his|she|her|they|them|their|theirs)\b/gi, '');
+
+    // Replace names with initials only for the first occurrence
     return text.replace(namePattern, function(match, firstName, lastName) {
-        const context = getContext(text, match);
-        
-        // If the name appears in the context of a job or profile, anonymize it
-        if (context.includes('designer') || context.includes('engineer') || context.includes('developer') || context.includes('profile')) {
-            return `${firstName.charAt(0)}.${lastName.charAt(0)}.`;
+        if (!firstNameAnonymized) {
+            firstNameAnonymized = true; // Mark the first name occurrence as anonymized
+            return `${firstName.charAt(0).toUpperCase()}. ${lastName.charAt(0).toUpperCase()}.`; // Return initials
         }
+        // Return the full name for any other occurrence
         return `${firstName} ${lastName}`;
     });
 }
-
-
-// Context analysis function to get surrounding text context of the match
-function getContext(text, match, radius = 100) {
-    const startIndex = text.indexOf(match);
-    const start = Math.max(0, startIndex - radius);
-    const end = Math.min(text.length, startIndex + match.length + radius);
-    return text.slice(start, end).toLowerCase();
-}
-
 
 // File processing function
 function processFile() {
@@ -41,12 +35,14 @@ function processFile() {
     
     if (!file) {
         errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Error: No file selected.';
         return;
     }
     
     errorDiv.style.display = 'none';
-    const reader = new FileReader();
-    
+
+    const reader = new FileReader(); // Initialize reader here
+
     // For PDF files
     if (file.type === "application/pdf") {
         reader.onload = function(event) {
