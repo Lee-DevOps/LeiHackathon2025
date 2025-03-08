@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Upload and Anonymize</title>
+    <!-- Including the external JS libraries for PDF and DOCX extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        textarea { width: 80%; height: 200px; margin-top: 10px; }
+        button { padding: 10px; margin-top: 10px; cursor: pointer; }
+        .error { color: red; display: none; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Upload Resume and Anonymize</h2>
+    <input type="file" id="fileInput" accept=".pdf,.docx,.txt">
+    <button onclick="processFile()">Upload and Extract Text</button>
+    <div id="error" class="error">Error: Please try again</div>
+    <h3>Extracted Text</h3>
+    <textarea id="textArea" readonly></textarea>
+    <h3>Anonymized Text</h3>
+    <textarea id="anonymizedTextArea" readonly></textarea>
+
+    <script src="script.js"></script>
+</body>
+</html>
